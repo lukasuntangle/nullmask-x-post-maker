@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nullmask X Post Maker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #1a1a1a;
+      color: #fff;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 10px; font-size: 2rem; }
+    .subtitle { text-align: center; color: #888; margin-bottom: 40px; }
+    .input-section {
+      background: #2d2d2d;
+      padding: 30px;
+      border-radius: 16px;
+      margin-bottom: 40px;
+    }
+    .input-group { margin-bottom: 20px; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; color: #CDFF00; }
+    input[type="text"] {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid #444;
+      border-radius: 10px;
+      background: #1a1a1a;
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 16px;
+    }
+    input[type="text"]:focus { outline: none; border-color: #CDFF00; }
+    .asset-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .asset-option {
+      background: #1a1a1a;
+      border: 2px solid #444;
+      border-radius: 10px;
+      padding: 10px;
+      cursor: pointer;
+      text-align: center;
+    }
+    .asset-option:hover { border-color: #666; }
+    .asset-option.selected { border-color: #CDFF00; background: #2a2a1a; }
+    .asset-option img { width: 60px; height: 60px; object-fit: contain; }
+    .asset-option span { display: block; font-size: 11px; margin-top: 6px; color: #888; }
+    .btn {
+      background: #CDFF00;
+      color: #1a1a1a;
+      border: none;
+      padding: 16px 40px;
+      font-size: 18px;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(205, 255, 0, 0.3); }
+    .btn-container { text-align: center; }
+    .output-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 30px;
+    }
+    .output-card { background: #2d2d2d; border-radius: 16px; padding: 20px; }
+    .output-card h3 { margin-bottom: 15px; font-size: 1.2rem; }
+    .output-card h3 span { color: #CDFF00; }
+    .canvas-container {
+      width: 100%;
+      background: #0a0a0a;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 2px solid #444;
+    }
+    .canvas-container canvas { width: 100%; height: auto; display: block; }
+    .download-btn {
+      display: inline-block;
+      margin-top: 15px;
+      background: transparent;
+      border: 2px solid #CDFF00;
+      color: #CDFF00;
+      padding: 10px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+    }
+    .download-btn:hover { background: #CDFF00; color: #1a1a1a; }
+    .hidden { display: none; }
+    .suggested-asset {
+      margin-top: 10px;
+      padding: 10px 15px;
+      background: rgba(205, 255, 0, 0.1);
+      border-radius: 8px;
+      font-size: 13px;
+      color: #CDFF00;
+    }
+    .size-info { font-size: 12px; color: #666; margin-top: 5px; }
+    @media (max-width: 600px) { .output-section { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Nullmask X Post Maker</h1>
+    <p class="subtitle">Generate branded social graphics - high quality 3200x1800 (16:9)</p>
+
+    <div class="input-section">
+      <div class="input-group">
+        <label>Main Title (Line 1)</label>
+        <input type="text" id="titleLine1" placeholder="e.g., Privacy Didn't Exist.">
+      </div>
+      <div class="input-group">
+        <label>Accent Text (Line 2 - with >>> in dark mode)</label>
+        <input type="text" id="titleLine2" placeholder="e.g., Until Now!">
+      </div>
+      <div class="input-group">
+        <label>Subtitle (Optional - grey style only)</label>
+        <input type="text" id="subtitle" placeholder="e.g., Private in just 2 clicks.">
+      </div>
+      <div class="input-group">
+        <label>Choose Asset</label>
+        <div id="suggestedAsset" class="suggested-asset hidden"></div>
+        <div class="asset-selector" id="assetSelector"></div>
+      </div>
+      <div class="btn-container">
+        <button class="btn" onclick="generatePosts()">Generate Posts</button>
+      </div>
+    </div>
+
+    <div class="output-section">
+      <div class="output-card">
+        <h3><span>Dark</span> Style</h3>
+        <div class="canvas-container">
+          <canvas id="darkCanvas" width="3200" height="1800"></canvas>
+        </div>
+        <button class="download-btn" onclick="downloadCanvas('darkCanvas', 'nullmask-dark.png')">Download Dark (3200x1800)</button>
+        <p class="size-info">High quality - X/Twitter optimized ratio</p>
+      </div>
+      <div class="output-card">
+        <h3><span>Grey</span> Style</h3>
+        <div class="canvas-container">
+          <canvas id="greyCanvas" width="3200" height="1800"></canvas>
+        </div>
+        <button class="download-btn" onclick="downloadCanvas('greyCanvas', 'nullmask-grey.png')">Download Grey (3200x1800)</button>
+        <p class="size-info">High quality - X/Twitter optimized ratio</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const W = 3200, H = 1800; // 2x resolution for high quality
+
+    const ASSETS = {
+      blinded: { file: 'blinded.png', keywords: ['privacy', 'private', 'hidden', 'anonymous', 'blind', 'hide', 'invisible', 'mask', 'secret', 'stealth', 'exist'] },
+      blocks: { file: 'blocks.png', keywords: ['blockchain', 'block', 'data', 'decentralized', 'chain', 'ledger', 'distributed', 'node'] },
+      eth: { file: 'eth.png', keywords: ['ethereum', 'eth', 'crypto', 'web3', 'defi', 'token', 'coin', 'cryptocurrency'] },
+      hand: { file: 'hand.png', keywords: ['wallet', 'connect', 'mobile', 'metamask', 'phone', 'app', 'transaction', 'click', 'easy', 'simple', 'user'] },
+      machine: { file: 'machine.png', keywords: ['system', 'infrastructure', 'network', 'protocol', 'architecture', 'platform', 'engine', 'core'] },
+      protected: { file: 'protected.png', keywords: ['protect', 'security', 'secure', 'safe', 'surveillance', 'watch', 'eye', 'guard', 'defense'] },
+      shields: { file: 'shields.png', keywords: ['shield', 'layer', 'multiple', 'defense', 'fortify', 'armor', 'strong', 'robust', 'multi'] },
+      viewing: { file: 'viewing.png', keywords: ['scan', 'view', 'monitor', 'analyze', 'track', 'detect', 'observe', 'inspect', 'audit'] }
+    };
+
+    let selectedAsset = null;
+    let loadedImages = {};
+
+    async function preloadImages() {
+      const promises = [];
+      for (const [key, asset] of Object.entries(ASSETS)) {
+        const img = new Image();
+        promises.push(new Promise(r => { img.onload = () => { loadedImages[key] = img; r(); }; img.onerror = r; }));
+        img.src = asset.file;
+      }
+      const logoDark = new Image(), logoGrey = new Image();
+      promises.push(new Promise(r => { logoDark.onload = () => { loadedImages.logoDark = logoDark; r(); }; logoDark.onerror = r; }));
+      logoDark.src = 'logo-grey-for-dark.png';
+      promises.push(new Promise(r => { logoGrey.onload = () => { loadedImages.logoGrey = logoGrey; r(); }; logoGrey.onerror = r; }));
+      logoGrey.src = 'logo-dark-for-grey.png';
+      await Promise.all(promises);
+    }
+
+    async function loadFonts() {
+      const fonts = [
+        new FontFace('Poppins', 'url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLCz7Z1xlFd2JQEk.woff2)', { weight: '800' }),
+        new FontFace('Poppins', 'url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLCz7Z1xlFd2JQEk.woff2)', { weight: '900' }),
+        new FontFace('Poppins', 'url(https://fonts.gstatic.com/s/poppins/v21/pxiDyp8kv8JHgFVrJJLm111VF9eO.woff2)', { weight: '900', style: 'italic' }),
+        new FontFace('Poppins', 'url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLGT9Z1xlFd2JQEk.woff2)', { weight: '500' }),
+      ];
+      await Promise.all(fonts.map(async f => { try { await f.load(); document.fonts.add(f); } catch(e) {} }));
+      await document.fonts.ready;
+    }
+
+    function createAssetSelector() {
+      const container = document.getElementById('assetSelector');
+      for (const [key, asset] of Object.entries(ASSETS)) {
+        const div = document.createElement('div');
+        div.className = 'asset-option';
+        div.dataset.asset = key;
+        div.innerHTML = `<img src="${asset.file}" alt="${key}"><span>${key}</span>`;
+        div.onclick = () => selectAsset(key);
+        container.appendChild(div);
+      }
+    }
+
+    function selectAsset(key) {
+      selectedAsset = key;
+      document.querySelectorAll('.asset-option').forEach(el => el.classList.toggle('selected', el.dataset.asset === key));
+    }
+
+    function suggestAsset(text) {
+      const lower = text.toLowerCase();
+      let best = null, score = 0;
+      for (const [key, asset] of Object.entries(ASSETS)) {
+        let s = 0;
+        for (const kw of asset.keywords) if (lower.includes(kw)) s += kw.length;
+        if (s > score) { score = s; best = key; }
+      }
+      return best || 'blinded';
+    }
+
+    document.getElementById('titleLine1').addEventListener('input', updateSuggestion);
+    document.getElementById('titleLine2').addEventListener('input', updateSuggestion);
+
+    function updateSuggestion() {
+      const text = document.getElementById('titleLine1').value + ' ' + document.getElementById('titleLine2').value;
+      const suggested = suggestAsset(text);
+      const el = document.getElementById('suggestedAsset');
+      if (text.trim()) {
+        el.textContent = `Suggested: ${suggested}`;
+        el.classList.remove('hidden');
+        if (!selectedAsset) selectAsset(suggested);
+      } else el.classList.add('hidden');
+    }
+
+    function generatePosts() {
+      const line1 = document.getElementById('titleLine1').value || "Privacy Didn't Exist.";
+      const line2 = document.getElementById('titleLine2').value || 'Until Now!';
+      const subtitle = document.getElementById('subtitle').value;
+      const asset = selectedAsset || suggestAsset(line1 + ' ' + line2);
+      generateDarkPost(line1, line2, asset);
+      generateGreyPost(line1, line2, subtitle, asset);
+    }
+
+    function fitText(ctx, text, maxWidth, baseFontSize, fontWeight, fontStyle = '') {
+      let fontSize = baseFontSize;
+      const minFontSize = 80; // 2x scaled minimum
+      while (fontSize > minFontSize) {
+        ctx.font = `${fontStyle} ${fontWeight} ${fontSize}px Poppins`.trim();
+        if (ctx.measureText(text).width <= maxWidth) break;
+        fontSize -= 4;
+      }
+      return fontSize;
+    }
+
+    function generateDarkPost(line1, line2, assetKey) {
+      const canvas = document.getElementById('darkCanvas');
+      const ctx = canvas.getContext('2d');
+
+      // Background
+      ctx.fillStyle = '#2D2D2D';
+      ctx.fillRect(0, 0, W, H);
+
+      // Logo (2x scaled)
+      const logo = loadedImages.logoDark;
+      if (logo) {
+        const targetW = 720;
+        const scale = targetW / logo.width;
+        ctx.drawImage(logo, (W - targetW) / 2, 70, logo.width * scale, logo.height * scale);
+      }
+
+      // Asset (2x scaled)
+      const asset = loadedImages[assetKey];
+      if (asset) {
+        const maxW = 1200, maxH = 1200;
+        const scale = Math.min(maxW / asset.width, maxH / asset.height);
+        const aw = asset.width * scale, ah = asset.height * scale;
+        ctx.drawImage(asset, 120, (H - ah) / 2 + 60, aw, ah);
+      }
+
+      // Text (auto-fit to prevent overflow, 2x scaled)
+      const textX = 1560, maxTextW = W - textX - 100;
+      const line2Full = '>>> ' + line2;
+
+      const fontSize1 = fitText(ctx, line1, maxTextW, 176, '800');
+      const fontSize2 = fitText(ctx, line2Full, maxTextW, 176, '800');
+      const fontSize = Math.min(fontSize1, fontSize2);
+      const lineHeight = fontSize * 1.25;
+
+      ctx.font = `800 ${fontSize}px Poppins`;
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillText(line1, textX, 840);
+
+      ctx.fillStyle = '#CDFF00';
+      ctx.fillText(line2Full, textX, 840 + lineHeight);
+    }
+
+    function generateGreyPost(line1, line2, subtitle, assetKey) {
+      const canvas = document.getElementById('greyCanvas');
+      const ctx = canvas.getContext('2d');
+
+      // Background
+      ctx.fillStyle = '#C4C4C4';
+      ctx.fillRect(0, 0, W, H);
+
+      // Logo (2x scaled)
+      const logo = loadedImages.logoGrey;
+      if (logo) {
+        const targetW = 720;
+        const scale = targetW / logo.width;
+        ctx.drawImage(logo, (W - targetW) / 2, 70, logo.width * scale, logo.height * scale);
+      }
+
+      // Asset (2x scaled)
+      const asset = loadedImages[assetKey];
+      if (asset) {
+        const maxW = 1200, maxH = 1200;
+        const scale = Math.min(maxW / asset.width, maxH / asset.height);
+        const aw = asset.width * scale, ah = asset.height * scale;
+        ctx.drawImage(asset, 120, (H - ah) / 2 + 60, aw, ah);
+      }
+
+      // Text (auto-fit to prevent overflow, 2x scaled)
+      const textX = 1560, maxTextW = W - textX - 100;
+
+      const fontSize1 = fitText(ctx, line1, maxTextW, 164, '900', 'italic');
+      const fontSize2 = fitText(ctx, line2, maxTextW, 164, '900', 'italic');
+      const fontSize = Math.min(fontSize1, fontSize2);
+      const lineHeight = fontSize * 1.22;
+
+      ctx.font = `italic 900 ${fontSize}px Poppins`;
+      ctx.fillStyle = '#1A1A1A';
+      ctx.textAlign = 'left';
+      ctx.fillText(line1, textX, 800);
+      ctx.fillText(line2, textX, 800 + lineHeight);
+
+      if (subtitle) {
+        const subSize = fitText(ctx, subtitle, maxTextW, 88, '500');
+        ctx.font = `500 ${subSize}px Poppins`;
+        ctx.fillStyle = '#333333';
+        ctx.fillText(subtitle, textX, 800 + lineHeight * 2 + 20);
+      }
+    }
+
+    function downloadCanvas(canvasId, filename) {
+      const canvas = document.getElementById(canvasId);
+      canvas.toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 'image/png');
+    }
+
+    async function init() {
+      await Promise.all([preloadImages(), loadFonts()]);
+      createAssetSelector();
+      generatePosts();
+    }
+
+    init();
+  </script>
+</body>
+</html>
