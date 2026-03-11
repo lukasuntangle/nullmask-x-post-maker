@@ -281,31 +281,40 @@
         ctx.drawImage(logo, (W - targetW) / 2, 70, logo.width * scale, logo.height * scale);
       }
 
-      // Asset (smaller to give more text room)
+      // Asset - positioned with padding, not cut off
       const asset = loadedImages[assetKey];
+      let assetEndX = 1000; // default text start area
       if (asset) {
-        const maxW = 950, maxH = 950;
+        const maxW = 850, maxH = 850;
         const scale = Math.min(maxW / asset.width, maxH / asset.height);
         const aw = asset.width * scale, ah = asset.height * scale;
-        ctx.drawImage(asset, 80, (H - ah) / 2 + 80, aw, ah);
+        const assetX = 120; // padding from left edge
+        const assetY = (H - ah) / 2 + 40; // vertically centered
+        ctx.drawImage(asset, assetX, assetY, aw, ah);
+        assetEndX = assetX + aw + 80; // gap after asset
       }
 
       // Text (auto-fit to prevent overflow)
-      const textX = 1150, maxTextW = W - textX - 60;
+      const textX = Math.max(assetEndX, 1050);
+      const maxTextW = W - textX - 80;
       const line2Full = '>>> ' + line2;
 
-      const fontSize1 = fitText(ctx, line1, maxTextW, 200, '800');
-      const fontSize2 = fitText(ctx, line2Full, maxTextW, 200, '800');
+      const fontSize1 = fitText(ctx, line1, maxTextW, 180, '800');
+      const fontSize2 = fitText(ctx, line2Full, maxTextW, 180, '800');
       const fontSize = Math.min(fontSize1, fontSize2);
       const lineHeight = fontSize * 1.25;
+
+      // Vertically center text block
+      const textBlockH = lineHeight * 2;
+      const textY = (H - textBlockH) / 2 + fontSize * 0.8;
 
       ctx.font = `800 ${fontSize}px Poppins`;
       ctx.textAlign = 'left';
       ctx.fillStyle = '#FFFFFF';
-      ctx.fillText(line1, textX, 820);
+      ctx.fillText(line1, textX, textY);
 
       ctx.fillStyle = '#CDFF00';
-      ctx.fillText(line2Full, textX, 820 + lineHeight);
+      ctx.fillText(line2Full, textX, textY + lineHeight);
     }
 
     function generateGreyPost(line1, line2, subtitle, assetKey) {
@@ -324,34 +333,44 @@
         ctx.drawImage(logo, (W - targetW) / 2, 70, logo.width * scale, logo.height * scale);
       }
 
-      // Asset (smaller to give more text room)
+      // Asset - positioned with padding, not cut off
       const asset = loadedImages[assetKey];
+      let assetEndX = 1000;
       if (asset) {
-        const maxW = 950, maxH = 950;
+        const maxW = 850, maxH = 850;
         const scale = Math.min(maxW / asset.width, maxH / asset.height);
         const aw = asset.width * scale, ah = asset.height * scale;
-        ctx.drawImage(asset, 80, (H - ah) / 2 + 80, aw, ah);
+        const assetX = 120;
+        const assetY = (H - ah) / 2 + 40;
+        ctx.drawImage(asset, assetX, assetY, aw, ah);
+        assetEndX = assetX + aw + 80;
       }
 
       // Text (auto-fit to prevent overflow)
-      const textX = 1150, maxTextW = W - textX - 60;
+      const textX = Math.max(assetEndX, 1050);
+      const maxTextW = W - textX - 80;
 
-      const fontSize1 = fitText(ctx, line1, maxTextW, 190, '900', 'italic');
-      const fontSize2 = fitText(ctx, line2, maxTextW, 190, '900', 'italic');
+      const fontSize1 = fitText(ctx, line1, maxTextW, 170, '900', 'italic');
+      const fontSize2 = fitText(ctx, line2, maxTextW, 170, '900', 'italic');
       const fontSize = Math.min(fontSize1, fontSize2);
       const lineHeight = fontSize * 1.22;
+
+      // Calculate total text block height
+      const hasSubtitle = subtitle && subtitle.trim();
+      const subSize = hasSubtitle ? fitText(ctx, subtitle, maxTextW, 100, '500') : 0;
+      const textBlockH = lineHeight * 2 + (hasSubtitle ? subSize + 40 : 0);
+      const textY = (H - textBlockH) / 2 + fontSize * 0.8;
 
       ctx.font = `italic 900 ${fontSize}px Poppins`;
       ctx.fillStyle = '#1A1A1A';
       ctx.textAlign = 'left';
-      ctx.fillText(line1, textX, 800);
-      ctx.fillText(line2, textX, 800 + lineHeight);
+      ctx.fillText(line1, textX, textY);
+      ctx.fillText(line2, textX, textY + lineHeight);
 
-      if (subtitle) {
-        const subSize = fitText(ctx, subtitle, maxTextW, 110, '500');
+      if (hasSubtitle) {
         ctx.font = `500 ${subSize}px Poppins`;
         ctx.fillStyle = '#333333';
-        ctx.fillText(subtitle, textX, 800 + lineHeight * 2 + 20);
+        ctx.fillText(subtitle, textX, textY + lineHeight * 2 + 30);
       }
     }
 
