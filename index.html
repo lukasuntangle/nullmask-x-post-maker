@@ -291,9 +291,11 @@
       const fontSize = Math.min(fontSize1, fontSize2);
       const lineHeight = fontSize * 1.25;
 
-      // Vertically center text block
+      // Vertically center text block (shifted down to account for logo)
+      const logoSpace = 180; // space taken by logo at top
+      const contentAreaH = H - logoSpace;
       const textBlockH = lineHeight * 2;
-      const textY = (H - textBlockH) / 2 + fontSize * 0.8;
+      const textY = logoSpace + (contentAreaH - textBlockH) / 2 + fontSize * 0.8;
 
       // Asset - larger, vertically aligned with text center
       const asset = loadedImages[assetKey];
@@ -304,7 +306,7 @@
         const assetX = 100;
         // Align asset center with text block center
         const textCenterY = textY + lineHeight * 0.5;
-        const assetY = textCenterY - ah / 2 + 40;
+        const assetY = textCenterY - ah / 2;
         ctx.drawImage(asset, assetX, assetY, aw, ah);
       }
 
@@ -342,11 +344,13 @@
       const fontSize = Math.min(fontSize1, fontSize2);
       const lineHeight = fontSize * 1.22;
 
-      // Calculate total text block height
+      // Calculate total text block height (shifted down to account for logo)
       const hasSubtitle = subtitle && subtitle.trim();
       const subSize = hasSubtitle ? fitText(ctx, subtitle, maxTextW, 100, '500') : 0;
+      const logoSpace = 180;
+      const contentAreaH = H - logoSpace;
       const textBlockH = lineHeight * 2 + (hasSubtitle ? subSize + 40 : 0);
-      const textY = (H - textBlockH) / 2 + fontSize * 0.8;
+      const textY = logoSpace + (contentAreaH - textBlockH) / 2 + fontSize * 0.8;
 
       // Asset - larger, vertically aligned with text center
       const asset = loadedImages[assetKey];
@@ -356,7 +360,7 @@
         const aw = asset.width * scale, ah = asset.height * scale;
         const assetX = 100;
         const textCenterY = textY + lineHeight * 0.5;
-        const assetY = textCenterY - ah / 2 + 40;
+        const assetY = textCenterY - ah / 2;
         ctx.drawImage(asset, assetX, assetY, aw, ah);
       }
 
