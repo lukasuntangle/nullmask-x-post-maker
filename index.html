@@ -294,8 +294,8 @@
       const textX = 1560, maxTextW = W - textX - 100;
       const line2Full = '>>> ' + line2;
 
-      const fontSize1 = fitText(ctx, line1, maxTextW, 176, '800');
-      const fontSize2 = fitText(ctx, line2Full, maxTextW, 176, '800');
+      const fontSize1 = fitText(ctx, line1, maxTextW, 220, '800');
+      const fontSize2 = fitText(ctx, line2Full, maxTextW, 220, '800');
       const fontSize = Math.min(fontSize1, fontSize2);
       const lineHeight = fontSize * 1.25;
 
@@ -336,8 +336,8 @@
       // Text (auto-fit to prevent overflow, 2x scaled)
       const textX = 1560, maxTextW = W - textX - 100;
 
-      const fontSize1 = fitText(ctx, line1, maxTextW, 164, '900', 'italic');
-      const fontSize2 = fitText(ctx, line2, maxTextW, 164, '900', 'italic');
+      const fontSize1 = fitText(ctx, line1, maxTextW, 210, '900', 'italic');
+      const fontSize2 = fitText(ctx, line2, maxTextW, 210, '900', 'italic');
       const fontSize = Math.min(fontSize1, fontSize2);
       const lineHeight = fontSize * 1.22;
 
@@ -348,7 +348,7 @@
       ctx.fillText(line2, textX, 800 + lineHeight);
 
       if (subtitle) {
-        const subSize = fitText(ctx, subtitle, maxTextW, 88, '500');
+        const subSize = fitText(ctx, subtitle, maxTextW, 110, '500');
         ctx.font = `500 ${subSize}px Poppins`;
         ctx.fillStyle = '#333333';
         ctx.fillText(subtitle, textX, 800 + lineHeight * 2 + 20);
