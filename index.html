@@ -281,32 +281,32 @@
         ctx.drawImage(logo, (W - targetW) / 2, 70, logo.width * scale, logo.height * scale);
       }
 
-      // Asset - positioned with padding, not cut off
-      const asset = loadedImages[assetKey];
-      let assetEndX = 1000; // default text start area
-      if (asset) {
-        const maxW = 850, maxH = 850;
-        const scale = Math.min(maxW / asset.width, maxH / asset.height);
-        const aw = asset.width * scale, ah = asset.height * scale;
-        const assetX = 120; // padding from left edge
-        const assetY = (H - ah) / 2 + 40; // vertically centered
-        ctx.drawImage(asset, assetX, assetY, aw, ah);
-        assetEndX = assetX + aw + 80; // gap after asset
-      }
-
-      // Text (auto-fit to prevent overflow)
-      const textX = Math.max(assetEndX, 1050);
+      // Calculate text first to align asset with it
+      const textX = 1100;
       const maxTextW = W - textX - 80;
       const line2Full = '>>> ' + line2;
 
-      const fontSize1 = fitText(ctx, line1, maxTextW, 180, '800');
-      const fontSize2 = fitText(ctx, line2Full, maxTextW, 180, '800');
+      const fontSize1 = fitText(ctx, line1, maxTextW, 200, '800');
+      const fontSize2 = fitText(ctx, line2Full, maxTextW, 200, '800');
       const fontSize = Math.min(fontSize1, fontSize2);
       const lineHeight = fontSize * 1.25;
 
       // Vertically center text block
       const textBlockH = lineHeight * 2;
       const textY = (H - textBlockH) / 2 + fontSize * 0.8;
+
+      // Asset - larger, vertically aligned with text center
+      const asset = loadedImages[assetKey];
+      if (asset) {
+        const maxW = 900, maxH = 900;
+        const scale = Math.min(maxW / asset.width, maxH / asset.height);
+        const aw = asset.width * scale, ah = asset.height * scale;
+        const assetX = 100;
+        // Align asset center with text block center
+        const textCenterY = textY + lineHeight * 0.5;
+        const assetY = textCenterY - ah / 2 + 40;
+        ctx.drawImage(asset, assetX, assetY, aw, ah);
+      }
 
       ctx.font = `800 ${fontSize}px Poppins`;
       ctx.textAlign = 'left';
@@ -333,25 +333,12 @@
         ctx.drawImage(logo, (W - targetW) / 2, 70, logo.width * scale, logo.height * scale);
       }
 
-      // Asset - positioned with padding, not cut off
-      const asset = loadedImages[assetKey];
-      let assetEndX = 1000;
-      if (asset) {
-        const maxW = 850, maxH = 850;
-        const scale = Math.min(maxW / asset.width, maxH / asset.height);
-        const aw = asset.width * scale, ah = asset.height * scale;
-        const assetX = 120;
-        const assetY = (H - ah) / 2 + 40;
-        ctx.drawImage(asset, assetX, assetY, aw, ah);
-        assetEndX = assetX + aw + 80;
-      }
-
-      // Text (auto-fit to prevent overflow)
-      const textX = Math.max(assetEndX, 1050);
+      // Calculate text first to align asset with it
+      const textX = 1100;
       const maxTextW = W - textX - 80;
 
-      const fontSize1 = fitText(ctx, line1, maxTextW, 170, '900', 'italic');
-      const fontSize2 = fitText(ctx, line2, maxTextW, 170, '900', 'italic');
+      const fontSize1 = fitText(ctx, line1, maxTextW, 190, '900', 'italic');
+      const fontSize2 = fitText(ctx, line2, maxTextW, 190, '900', 'italic');
       const fontSize = Math.min(fontSize1, fontSize2);
       const lineHeight = fontSize * 1.22;
 
@@ -360,6 +347,18 @@
       const subSize = hasSubtitle ? fitText(ctx, subtitle, maxTextW, 100, '500') : 0;
       const textBlockH = lineHeight * 2 + (hasSubtitle ? subSize + 40 : 0);
       const textY = (H - textBlockH) / 2 + fontSize * 0.8;
+
+      // Asset - larger, vertically aligned with text center
+      const asset = loadedImages[assetKey];
+      if (asset) {
+        const maxW = 900, maxH = 900;
+        const scale = Math.min(maxW / asset.width, maxH / asset.height);
+        const aw = asset.width * scale, ah = asset.height * scale;
+        const assetX = 100;
+        const textCenterY = textY + lineHeight * 0.5;
+        const assetY = textCenterY - ah / 2 + 40;
+        ctx.drawImage(asset, assetX, assetY, aw, ah);
+      }
 
       ctx.font = `italic 900 ${fontSize}px Poppins`;
       ctx.fillStyle = '#1A1A1A';
